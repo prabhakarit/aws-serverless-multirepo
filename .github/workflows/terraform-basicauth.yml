@@ -12,8 +12,8 @@ on:
       region:
         description: 'Region'     
         required: true
-        default: 'eu-central-1'
-        options: ['eu-central-1']
+        default: 'ap-south-1'
+        options: ['ap-south-1']
         type: choice
       aws-secret-access-key:
         description: 'aws-secret-access-key'     
