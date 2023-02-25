@@ -1,0 +1,59 @@
+permissions:
+  id-token: write # required to use OIDC authentication
+  contents: read # required to checkout the code from the repo
+name: terraform basicauth
+# on:
+#     push:
+#         branches:
+#             - master
+on: 
+  workflow_dispatch:
+    inputs:
+      region:
+        description: 'Region'     
+        required: true
+        default: 'eu-central-1'
+        options: ['eu-central-1']
+        type: choice
+      aws-secret-access-key:
+        description: 'aws-secret-access-key'     
+        required: true
+        type: string
+      aws-access-key-id:
+        description: 'aws-access-key-id'     
+        required: true
+        type: string
+
+jobs:
+  build:
+      runs-on: ubuntu-latest
+      strategy:
+            matrix:
+                node-version: [16.x]
+      steps:
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ github.event.inputs.aws-access-key-id }}
+          aws-secret-access-key: ${{ github.event.inputs.aws-secret-access-key }}
+          aws-region: ${{ github.event.inputs.region }}
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.2.5
+      - name: Terraform Plan and apply changes
+        run: |
+          cd Infrastructure
+          cd basic-auth/github
+          ls -lrt
+          export TF_CLI_ARGS_plan="-compact-warnings"
+          export TF_CLI_ARGS_apply="-compact-warnings"
+          terraform init -reconfigure -backend-config=./backend/backend.tf
+          terraform validate
+          terraform plan -input=false -no-color  
+          terraform apply -auto-approve

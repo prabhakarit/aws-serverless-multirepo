@@ -1,0 +1,63 @@
+permissions:
+  id-token: write # required to use OIDC authentication
+  contents: read # required to checkout the code from the repo
+name: config-builder
+# on:
+#     push:
+#         branches:
+#             - master
+on: 
+  workflow_dispatch:
+    inputs:
+      region:
+        description: 'Region'     
+        required: true
+        default: 'eu-central-1'
+        options: ['eu-central-1']
+        type: choice
+      overwrite:
+        description: 'overwrite ?'     
+        required: true
+        default: '--overwrite'
+        options: ['--overwrite', ' ']
+        type: choice
+      key:
+        description: 'config key ?'     
+        required: true
+        type: string
+      value:
+        description: 'config value ?'     
+        required: true
+        type: string
+
+jobs:
+  build:
+      runs-on: ubuntu-latest
+      strategy:
+            matrix:
+                node-version: [16.x]
+      steps:
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::539016438966:role/github_role
+          role-duration-seconds: 900 # the ttl of the session, in seconds.
+          aws-region: ${{ github.event.inputs.region }}
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Setup AWS-CLI
+        run: |
+          # Upgrading python to 3.9
+          echo "installing pip"
+          sudo apt-get install python3
+          sudo apt install python3-pip
+          # Fix for pyOpenSSL error, fixing version for compatibility
+          # pip install --ignore-installed pyOpenSSL==22.0.0
+          pip3 install awscli --upgrade --user
+          echo "awscli installed"
+      - name: install config 
+        run : |
+          aws ssm put-parameter ${{ github.event.inputs.overwrite }} --name ${{ github.event.inputs.key }} --value "${{ github.event.inputs.value }}" --type "SecureString"
