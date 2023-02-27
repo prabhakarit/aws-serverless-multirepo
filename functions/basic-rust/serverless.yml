@@ -1,0 +1,82 @@
+service: ${opt:stage}-basic-rust-be
+provider:
+  name: aws
+  runtime: rust
+  memorySize: 512
+  timeout: 10
+  apiGateway:
+    apiKeys:
+      - name: '${opt:stage}-rust-go'
+  vpc:
+    securityGroupIds:
+      ['${file(./serverless.env.yml):${opt:stage}.vpc_security_group_id}']
+    subnetIds:
+      ['${file(./serverless.env.yml):${opt:stage}.vpc_private_subnet_1_id}', '${file(./serverless.env.yml):${opt:stage}.vpc_private_subnet_2_id}']
+  region: ${file(./serverless.env.yml):AWS_REGION}
+
+custom:
+  serverlessSsmFetch:
+    apikey_internal: /${opt:stage}/any/be/apikey/internal~true
+
+functions:
+  ${opt:stage}-basic-go-be:
+    handler: basic-rust
+    name: ${opt:stage}-basic-rust-be
+    provisionedConcurrency: ${file(./serverless.env.yml):${opt:stage}.provisioned_concurrency}
+    ssmToEnvironment:
+      - apikey_internal
+    environment:
+      default_country: ${file(./serverless.env.yml):default_country}
+      default_country_fullname: ${file(./serverless.env.yml):default_country_fullname}
+      aws_region: ${file(./serverless.env.yml):AWS_REGION}
+      environment: ${file(./serverless.env.yml):${opt:stage}.environment}
+    iamRoleStatementsName: ${opt:stage}-basic-rust-be-role
+    iamRoleStatements:
+      - Effect: "Allow"        
+        Action:
+          - "secretsmanager:*"       
+        Resource: "*"
+      - Effect: "Allow"        
+        Action:
+          - "dynamodb:BatchWriteItem"
+          - "dynamodb:PutItem"
+          - "dynamodb:GetItem"
+          - "dynamodb:ReadItem"
+          - "dynamodb:UpdateItem"
+        Resource: "*"
+      - Effect: "Allow"        
+        Action:
+          - "ec2:CreateNetworkInterface"
+          - "ec2:DeleteNetworkInterface"
+          - "ec2:DescribeNetworkInterfaces"
+        Resource: "*"  
+    events:
+      - http:
+          path: /basic-rust-be
+          method: post
+          private: true
+          cors:
+            origin: '*'
+            maxAge: 86400
+      - http:
+          path: /health
+          method: get
+          private: true 
+          cors:
+            origin: '*'
+            maxAge: 86400
+      - eventBridge:
+          name: ${file(./serverless.env.yml):${opt:stage}.environment}-basic-rust-keep-alive-scheduler
+          enabled: ${file(./serverless.env.yml):${opt:stage}.stay_alive_scheduler_enabled}
+          schedule: rate(${file(./serverless.env.yml):${opt:stage}.stay_alive_scheduler_rate_in_mins} minutes)
+          input:
+            httpMethod: POST
+            path: /health
+            body: "{\n        \"method\": \"health\"\n    }"
+plugins:
+  - serverless-iam-roles-per-function
+  - serverless-ssm-fetch
+  - serverless-rust
+
+package:
+  individually: true
