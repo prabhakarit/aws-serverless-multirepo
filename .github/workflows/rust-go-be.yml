@@ -36,6 +36,8 @@ jobs:
           role-duration-seconds: 900 # the ttl of the session, in seconds.
           aws-region: ${{ github.event.inputs.region }}
       - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo test --all-features
       - name: install basic-rust-be  
         run : |
           echo "environment = ${{ github.event.inputs.environment }}"
@@ -56,6 +58,8 @@ jobs:
           echo "after serverless install"
           echo "will continue with serverless deployment"
           cd ../../
+          rustup target add x86_64-unknown-linux-musl
+          sudo apt-get update && sudo apt-get install -y musl-tools
           echo "before serverless deploy"
           serverless deploy --stage dev --verbose
           echo "after serverless deploy"
