@@ -1,0 +1,61 @@
+permissions:
+  id-token: write # required to use OIDC authentication
+  contents: read # required to checkout the code from the repo
+name: basic rust backend
+# on:
+#     push:
+#         branches:
+#             - master
+on: 
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'     
+        required: true
+        default: 'dev'
+        options: ['dev','prod']
+        type: choice
+      region:
+        description: 'Region'     
+        required: true
+        default: 'ap-south-1'
+        options: ['ap-south-1']
+        type: choice
+jobs:
+  build:
+      if: ${{ github.event.inputs.environment }} == 'dev' ||  ${{ github.event.inputs.environment }} == 'prod'
+      runs-on: ubuntu-latest
+      strategy:
+            matrix:
+                node-version: [16.x]
+      steps:
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::379717436591:role/github_role
+          role-duration-seconds: 900 # the ttl of the session, in seconds.
+          aws-region: ${{ github.event.inputs.region }}
+      - uses: actions/checkout@v3
+      - name: install basic-rust-be  
+        run : |
+          echo "environment = ${{ github.event.inputs.environment }}"
+          echo "branch = ${{ github.event.inputs.Branch }}"
+          cd ./functions/basic-rust
+          pwd
+          echo "before serverless install"
+          npm i -g --save-dev serverless
+          echo "before install rust serverless plugin"
+          npm i -D serverless-rust
+          echo "install serverless ssm-fetch"
+          serverless plugin install --name serverless-ssm-fetch
+          echo "before serverless-iam-roles-per-function install"
+          npm install --save-dev serverless-iam-roles-per-function
+          cd ./node_modules/serverless-iam-roles-per-function
+          npm install
+          ls -lrt
+          echo "after serverless install"
+          echo "will continue with serverless deployment"
+          cd ../../
+          echo "before serverless deploy"
+          serverless deploy --stage ${{ github.event.inputs.environment }} --verbose
+          echo "after serverless deploy"

@@ -1,7 +1,7 @@
 permissions:
   id-token: write # required to use OIDC authentication
   contents: read # required to checkout the code from the repo
-name: classic-partner backend
+name: basic go backend
 # on:
 #     push:
 #         branches:
@@ -18,8 +18,8 @@ on:
       region:
         description: 'Region'     
         required: true
-        default: 'eu-central-1'
-        options: ['eu-central-1']
+        default: 'ap-south-1'
+        options: ['ap-south-1']
         type: choice
 jobs:
   build:
@@ -32,8 +32,7 @@ jobs:
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          #role-to-assume: arn:aws:iam::622157788797:role/github_role
-          role-to-assume: arn:aws:iam::539016438966:role/github_role
+          role-to-assume: arn:aws:iam::379717436591:role/github_role
           role-duration-seconds: 900 # the ttl of the session, in seconds.
           aws-region: ${{ github.event.inputs.region }}
       - uses: actions/checkout@v3
@@ -41,17 +40,18 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: install classic-partner-be  
+      - name: install basic-go-be  
         run : |
           echo "environment = ${{ github.event.inputs.environment }}"
           echo "branch = ${{ github.event.inputs.Branch }}"
-          cd backend
+          cd ./functions/basic-go
           pwd
-          cp ../cache-manager/gm-cache.mjs .
-          cp ../cache-manager/api-validate.mjs .
+          #cp ../cache-manager/gm-cache.mjs .
+          #cp ../cache-manager/api-validate.mjs .
           echo "before serverless install"
           # npm install -g serverless
           npm i -g --save-dev serverless
+          npm i cross-env env-cmd serverless-dotenv-plugin -D
           echo "install serverless ssm-fetch"
           serverless plugin install --name serverless-ssm-fetch
           echo "before serverless-iam-roles-per-function install"
