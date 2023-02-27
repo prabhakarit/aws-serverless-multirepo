@@ -1,4 +1,4 @@
-service: ${opt:stage}-basic-rust-be
+service: dev-basic-rust-be
 provider:
   name: aws
   runtime: rust
@@ -6,12 +6,12 @@ provider:
   timeout: 10
   apiGateway:
     apiKeys:
-      - name: '${opt:stage}-rust-go'
+      - name: 'dev-rust-go'
   vpc:
     securityGroupIds:
       ['${file(./serverless.env.yml):dev.vpc_security_group_id}']
     subnetIds:
-      ['${file(./serverless.env.yml):dev.vpc_private_subnet_1_id}', '${file(./serverless.env.yml):${opt:stage}.vpc_private_subnet_2_id}']
+      ['${file(./serverless.env.yml):dev.vpc_private_subnet_1_id}', '${file(./serverless.env.yml):dev.vpc_private_subnet_2_id}']
   region: ${file(./serverless.env.yml):AWS_REGION}
 
 # custom:
@@ -19,7 +19,7 @@ provider:
 #     apikey_internal: /${opt:stage}/any/be/apikey/internal~true
 
 functions:
-  ${opt:stage}-basic-go-be:
+  dev-basic-go-be:
     handler: basic-rust
     name: dev-basic-rust-be
     provisionedConcurrency: ${file(./serverless.env.yml):dev.provisioned_concurrency}
@@ -30,7 +30,7 @@ functions:
       default_country_fullname: ${file(./serverless.env.yml):default_country_fullname}
       aws_region: ${file(./serverless.env.yml):AWS_REGION}
       environment: ${file(./serverless.env.yml):dev.environment}
-    iamRoleStatementsName: ${opt:stage}-basic-rust-be-role
+    iamRoleStatementsName: dev-basic-rust-be-role
     iamRoleStatements:
       - Effect: "Allow"        
         Action:
