@@ -50,12 +50,12 @@ jobs:
           serverless plugin install --name serverless-ssm-fetch
           echo "before serverless-iam-roles-per-function install"
           npm install --save-dev serverless-iam-roles-per-function
-          cd ./node_modules/serverless-iam-roles-per-function
-          npm install
-          ls -lrt
+          # cd ./node_modules/serverless-iam-roles-per-function
+          # npm install
+          # ls -lrt
           echo "after serverless install"
           echo "will continue with serverless deployment"
-          cd ../../
+          # cd ../../
           echo "before serverless deploy"
-          serverless deploy --stage ${{ github.event.inputs.environment }} --verbose
+          serverless deploy --stage dev --verbose
           echo "after serverless deploy"
