@@ -6,7 +6,7 @@ provider:
   timeout: 10
   apiGateway:
     apiKeys:
-      - name: 'dev-rust-go'
+      - name: 'dev-rust-be'
   vpc:
     securityGroupIds:
       ['${file(./serverless.env.yml):dev.vpc_security_group_id}']
@@ -19,7 +19,7 @@ provider:
 #     apikey_internal: /${opt:stage}/any/be/apikey/internal~true
 
 functions:
-  dev-basic-go-be:
+  dev-basic-rust-be:
     handler: basic-rust
     name: dev-basic-rust-be
     provisionedConcurrency: ${file(./serverless.env.yml):dev.provisioned_concurrency}
@@ -65,14 +65,14 @@ functions:
           cors:
             origin: '*'
             maxAge: 86400
-      - eventBridge:
-          name: ${file(./serverless.env.yml):dev.environment}-basic-rust-keep-alive-scheduler
-          enabled: ${file(./serverless.env.yml):dev.stay_alive_scheduler_enabled}
-          schedule: rate(${file(./serverless.env.yml):dev.stay_alive_scheduler_rate_in_mins} minutes)
-          input:
-            httpMethod: POST
-            path: /health
-            body: "{\n        \"method\": \"health\"\n    }"
+      # - eventBridge:
+      #     name: ${file(./serverless.env.yml):dev.environment}-basic-rust-keep-alive-scheduler
+      #     enabled: ${file(./serverless.env.yml):dev.stay_alive_scheduler_enabled}
+      #     schedule: rate(${file(./serverless.env.yml):dev.stay_alive_scheduler_rate_in_mins} minutes)
+      #     input:
+      #       httpMethod: POST
+      #       path: /health
+      #       body: "{\n        \"method\": \"health\"\n    }"
 plugins:
   - serverless-rust
   - serverless-iam-roles-per-function
