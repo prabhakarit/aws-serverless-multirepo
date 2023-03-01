@@ -39,6 +39,8 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - run: |
           cd ./functions/basic-rust
+          rustup update
+          rustup override unset
           cargo test --all-features
       - name: install basic-rust-be  
         run : |
@@ -46,6 +48,7 @@ jobs:
           echo "branch = ${{ github.event.inputs.Branch }}"
           cd ./functions/basic-rust
           pwd
+          rustup override unset
           echo "before serverless install"
           npm i -g --save-dev serverless
           echo "before install rust serverless plugin"
