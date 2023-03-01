@@ -37,13 +37,12 @@ jobs:
           aws-region: ${{ github.event.inputs.region }}
       - uses: actions/checkout@v3
       - uses: dtolnay/rust-toolchain@stable
+      - name: install basic-rust-be
       - run: |
           cd ./functions/basic-rust
           rustup update
           rustup override unset
           cargo test --all-features
-      - name: install basic-rust-be  
-        run : |
           echo "environment = ${{ github.event.inputs.environment }}"
           echo "branch = ${{ github.event.inputs.Branch }}"
           cd ./functions/basic-rust
@@ -68,3 +67,29 @@ jobs:
           echo "before serverless deploy"
           serverless deploy --stage dev --verbose
           echo "after serverless deploy"
+      # - name: install basic-rust-be  
+      #   run : |
+      #     echo "environment = ${{ github.event.inputs.environment }}"
+      #     echo "branch = ${{ github.event.inputs.Branch }}"
+      #     cd ./functions/basic-rust
+      #     pwd
+      #     rustup override unset
+      #     echo "before serverless install"
+      #     npm i -g --save-dev serverless
+      #     echo "before install rust serverless plugin"
+      #     npm i -D serverless-rust
+      #     # echo "install serverless ssm-fetch"
+      #     # serverless plugin install --name serverless-ssm-fetch
+      #     echo "before serverless-iam-roles-per-function install"
+      #     npm install --save-dev serverless-iam-roles-per-function
+      #     cd ./node_modules/serverless-iam-roles-per-function
+      #     npm install
+      #     # ls -lrt
+      #     echo "after serverless install"
+      #     echo "will continue with serverless deployment"
+      #     cd ../../
+      #     rustup target add x86_64-unknown-linux-musl
+      #     sudo apt-get update && sudo apt-get install -y musl-tools
+      #     echo "before serverless deploy"
+      #     serverless deploy --stage dev --verbose
+      #     echo "after serverless deploy"
