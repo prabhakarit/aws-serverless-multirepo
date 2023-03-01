@@ -45,7 +45,6 @@ jobs:
           cargo test --all-features
           echo "environment = ${{ github.event.inputs.environment }}"
           echo "branch = ${{ github.event.inputs.Branch }}"
-          cd ./functions/basic-rust
           pwd
           rustup override unset
           echo "before serverless install"
