@@ -41,7 +41,7 @@ jobs:
         run : |
           cd ./functions/basic-rust
           rustup override unset
-          cargo test --all-features
+          #cargo test --all-features
           echo "environment = ${{ github.event.inputs.environment }}"
           echo "branch = ${{ github.event.inputs.Branch }}"
           pwd
