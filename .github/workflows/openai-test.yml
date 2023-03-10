@@ -39,11 +39,6 @@ jobs:
           role-to-assume: arn:aws:iam::539016438966:role/github_role
           role-duration-seconds: 900 # the ttl of the session, in seconds.
           aws-region: ${{ github.event.inputs.region }}
-      - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
       - name: Install python
         run: |
           cd ./openai-test
@@ -52,10 +47,11 @@ jobs:
           sudo apt-get install python3
           sudo apt install python3-pip
           pip3 install openai
-          touch ../.github/workflows/${{ github.event.inputs.project }}.yml
-          mkdir ../${{ github.event.inputs.project }}
-          touch ../${{ github.event.inputs.project }}/README.md
+          touch ../.github/workflows/s3-wesbite.yml
+          mkdir ../s3-website
+          touch ../s3-website/README.md
           python3  api-call-test.py ${{ github.event.inputs.requirement }} ${{ github.event.inputs.project }}
+      - uses: actions/checkout@v3
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
         # Optional. Commit message for the created commit.
