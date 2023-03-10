@@ -47,9 +47,10 @@ jobs:
           echo "installing pip"
           sudo apt-get install python3
           sudo apt install python3-pip
+          pip3 install --upgrade pip3
           pip3 install aiohttp
-          pip install --ignore-installed pyOpenSSL==22.0.0
-          pip3 install openai
+          pip3 install --ignore-installed pyOpenSSL==22.0.0
+          pip3.10 install openai
           touch ../../.github/workflows/s3-wesbite.yml
           mkdir ../../s3-website
           touch ../../s3-website/README.md
