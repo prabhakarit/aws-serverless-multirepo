@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Sign up</title>
+	<!-- AWS SDK for JavaScript -->
+	<script src="https://sdk.amazonaws.com/js/aws-sdk-2.933.0.min.js" async defer></script>
+	<!-- AWS Cognito SDK -->
+	<script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js/dist/amazon-cognito-identity.min.js" async defer></script>
+	<!-- Google Sign-In SDK -->
+	<script src="https://apis.google.com/js/platform.js" async defer></script>
+	<meta name="google-signin-client_id" content="646143325524-89jc5tnhrfsker5ei8gkll71r2nheh32.apps.googleusercontent.com">
+</head>
+<body>
+	<h1>Sign up</h1>
+	<h2>Cognito</h2>
+	<form id="cognito-form">
+		<label for="cognito-email">Email:</label>
+		<input type="email" id="cognito-email" name="email">
+		<label for="cognito-password">Password:</label>
+		<input type="password" id="cognito-password" name="password">
+		<button type="submit">Sign up</button>
+	</form>
+	<h2>Google</h2>
+	<div class="g-signin2" data-onsuccess="onGoogleSignIn"></div>
+	<script>
+		// Cognito
+		const cognitoForm = document.querySelector('#cognito-form');
+		cognitoForm.addEventListener('submit', (e) => {
+			e.preventDefault();
+            console.log("1");
+			const email = e.target.email.value;
+			const password = e.target.password.value;
+			const poolData = {
+				UserPoolId: 'ap-south-1_ZHTXDtdvr',
+				ClientId: 'ls8tqd95u25ua6tjlr93tdppp'
+			};
+            console.log("2");
+			const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+            console.log("3");
+			const attributeList = [
+				new AmazonCognitoIdentity.CognitoUserAttribute({
+					Name: 'email',
+					Value: email
+				}),
+				new AmazonCognitoIdentity.CognitoUserAttribute({
+					Name: 'given_name',
+					Value: "Prabhakar"
+				}),
+				new AmazonCognitoIdentity.CognitoUserAttribute({
+					Name: 'family_name',
+					Value: "Borah"
+				})
+			];
+            console.log("3");
+			userPool.signUp(email, password, attributeList, null, function(err, result){
+                console.log("4");
+                console.log(result);
+				if (err) {
+					console.log(err);
+					return;
+				}
+                console.log("5");
+				const cognitoUser = result.user;
+                console.log(JSON.stringify(cognitoUser));
+				console.log('user name is ' + cognitoUser.getUsername());
+                console.log("6");
+			});
+		});
+
+		// Google
+		function onGoogleSignIn(googleUser) {
+			const id_token = googleUser.getAuthResponse().id_token;
+			const creds = new AWS.CognitoIdentityCredentials({
+				IdentityPoolId: 'ap-south-1:b2fadc14-081e-4641-922f-e69b30f9c5f1',
+				Logins: {
+					'accounts.google.com': id_token
+				}
+			});
+			AWS.config.credentials = creds;
+			creds.refreshPromise().then(() => {
+				console.log('Google sign-in successful');
+			});
+		}
+	</script>
+</body>
+</html>

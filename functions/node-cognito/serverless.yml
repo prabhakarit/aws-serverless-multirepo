@@ -1,14 +1,13 @@
-service: ${opt:stage}-basic-go-be
+service: ${opt:stage}-nodejs-cognito
 frameworkVersion: '2'
 provider:
   name: aws
-  runtime: go1.x
-  lambdaHashingVersion: 20201221
+  runtime: nodejs16.x
   memorySize: 512
   timeout: 10
   apiGateway:
     apiKeys:
-      - name: '${opt:stage}-basic-go'
+      - name: '${opt:stage}-nodejs-cognito'
   vpc:
     securityGroupIds:
       ['${file(./serverless.env.yml):${opt:stage}.vpc_security_group_id}']
@@ -17,9 +16,9 @@ provider:
   region: ${file(./serverless.env.yml):AWS_REGION}
 
 functions:
-  ${opt:stage}-basic-go-be:
-    handler: bin/goserverlesslambda
-    name: ${opt:stage}-basic-go-be
+  ${opt:stage}-nodejs-cognito:
+    handler: index
+    name: ${opt:stage}-nodejs-cognito
     provisionedConcurrency: ${file(./serverless.env.yml):${opt:stage}.provisioned_concurrency}
       - apikey_internal
     environment:
@@ -49,7 +48,7 @@ functions:
         Resource: "*"  
     events:
       - http:
-          path: /basic-go-be
+          path: /nodejs-cognito
           method: post
           private: true
           cors:
@@ -75,7 +74,4 @@ plugins:
   - serverless-ssm-fetch
 
 package:
- exclude:
-   - ./**
- include:
-   - ./bin/**
+  individually: true

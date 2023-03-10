@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>My App</title>
+  <!-- Include the AWS SDK for JavaScript and the Amazon Cognito Identity SDK -->
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.933.0.min.js"></script>
+  <script src="https://sdk.amazonaws.com/js/aws-cognito-sdk-1.7.0.min.js" async defer></script>
+  <!-- AWS Cognito SDK -->
+<script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js/dist/amazon-cognito-identity.min.js" async defer></script>
+  <!-- Include the Google API client library -->
+  <script src="https://apis.google.com/js/api.js" async defer></script>
+  <meta name="google-signin-client_id" content="646143325524-89jc5tnhrfsker5ei8gkll71r2nheh32.apps.googleusercontent.com">
+  <script>
+    // Initialize the AWS SDK
+    var creds = new AWS.Credentials('AKIAVQ2HMISXVLBWVDHC', 'LvZYB4zl/lcMqAq9Tny/7BrNX8T3aGOEcQP37vS2');
+    //AWS.config.region = 'ap-south-1';
+    AWS.config.update({
+        region: "ap-south-1",
+        credentials: creds
+    });
+
+    // Initialize the Amazon Cognito Identity SDK
+    var poolData = {
+      UserPoolId: 'ap-south-1_ZHTXDtdvr',
+      ClientId: 'ls8tqd95u25ua6tjlr93tdppp'
+    };
+    const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+
+    // Initialize the Google API client library
+    var googleAuth;
+    function initGoogleAuth() {
+      gapi.load('auth2', function() {
+        gapi.auth2.init({
+          client_id: '646143325524-89jc5tnhrfsker5ei8gkll71r2nheh32.apps.googleusercontent.com',
+          scope: 'prabhakar.borah@gmail.com'
+        }).then(function(authInstance) {
+          googleAuth = authInstance;
+        });
+      });
+    }
+
+    // Sign in with Amazon Cognito
+    function signIn() {
+      var email = document.getElementById('email').value;
+      var password = document.getElementById('password').value;
+      var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails({
+        Username: email,
+        Password: password
+      });
+      var userData = {
+        Username: email,
+        Pool: new AmazonCognitoIdentity.CognitoUserPool(poolData)
+      };
+      console.log("userdata = ", userData);
+      var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+      cognitoUser.authenticateUser(authenticationDetails, {
+        onSuccess: function(result) {
+          var accessToken = result.getAccessToken().getJwtToken();
+          var idToken = result.getIdToken().getJwtToken();
+          // Use the access token and ID token to authenticate requests to your backend
+          console.log('Access token:', accessToken);
+          console.log('ID token:', idToken);
+        },
+        onFailure: function(err) {
+          console.log('Error:', err);
+        }
+      });
+    }
+
+    // Sign in with Google
+    function signInWithGoogle() {
+      if (!googleAuth) {
+        console.log('Google API client library not loaded');
+        return;
+      }
+      googleAuth.signIn().then(function(googleUser) {
+        var idToken = googleUser.getAuthResponse().id_token;
+        // Use the ID token to authenticate requests to your backend
+        console.log('Google ID token:', idToken);
+      }, function(err) {
+        console.log('Error:', err);
+      });
+    }
+  </script>
+</head>
+<body onload="initGoogleAuth()">
+  <h1>My App</h1>
+  <p>Please sign in:</p>
+  <form onsubmit="event.preventDefault(); await signIn();">
+    <label>Email:</label>
+    <input type="email" id="email" required><br>
+    <label>Password:</label>
+    <input type="password" id="password" required><br>
+    <button type="submit">Sign In</button>
+  </form>
+  <hr>
+  <button onclick="signInWithGoogle()">Sign In with Google</button>
+</body>
+</html>

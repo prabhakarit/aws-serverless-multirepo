@@ -1,0 +1,91 @@
+permissions:
+  id-token: write # required to use OIDC authentication
+  contents: read # required to checkout the code from the repo
+name: openai-basic
+# on:
+#     push:
+#         branches:
+#             - master
+on: 
+  workflow_dispatch:
+    inputs:
+      region:
+        description: 'Region'     
+        required: true
+        default: 'ap-south-1'
+        options: ['ap-south-1']
+        type: choice
+      project:
+        description: 'project name ?'     
+        required: true
+        default: 's3-website'
+        type: string
+      requirement:
+        description: 'Requirement ?'     
+        required: true
+        default: 'write github actions to update to AWS s3 website and invalidate amazon cloudfront'
+        type: string
+
+jobs:
+  build:
+      runs-on: ubuntu-latest
+      permissions:
+        # Give the default GITHUB_TOKEN write permission to commit and push the
+        # added or changed files to the repository.
+        contents: write
+      strategy:
+            matrix:
+                node-version: [16.x]
+      steps:
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::539016438966:role/github_role
+          role-duration-seconds: 900 # the ttl of the session, in seconds.
+          aws-region: ${{ github.event.inputs.region }}
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install python
+        run: |
+          cd ./openai-test
+          # Upgrading python to 3.9
+          echo "installing pip"
+          sudo apt-get install python3
+          sudo apt install python3-pip
+          pip3 install openai
+          touch ../.github/workflows/${{ github.event.inputs.project }}.yml
+          mkdir ../${{ github.event.inputs.project }}
+          touch ../${{ github.event.inputs.project }}/README.md
+          python3  api-call-test.py ${{ github.event.inputs.requirement }} ${{ github.event.inputs.project }}
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+        # Optional. Commit message for the created commit.
+        # Defaults to "Apply automatic changes"
+        commit_message: Automated Change using github actions
+
+        # Optional. Local and remote branch name where commit is going to be pushed
+        #  to. Defaults to the current branch.
+        #  You might need to set `create_branch: true` if the branch does not exist.
+        branch: main
+
+        # Optional. Options used by `git-commit`.
+        # See https://git-scm.com/docs/git-commit#_options
+        commit_options: '--no-verify --signoff'
+
+        # Optional glob pattern of files which should be added to the commit
+        # Defaults to all (.)
+        # See the `pathspec`-documentation for git
+        # - https://git-scm.com/docs/git-add#Documentation/git-add.txt-ltpathspecgt82308203
+        # - https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
+        file_pattern: '* *.*'
+
+        # Optional. Local file path to the repository.
+        # Defaults to the root of the repository.
+        repository: .
+
+        # Optional. Options used by `git-push`.
+        # See https://git-scm.com/docs/git-push#_options
+        push_options: '--force'
