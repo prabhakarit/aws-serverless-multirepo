@@ -1,6 +1,6 @@
 permissions:
   id-token: write # required to use OIDC authentication
-  contents: read # required to checkout the code from the repo
+  contents: write # required to checkout the code from the repo
 name: openai-basic
 # on:
 #     push:
