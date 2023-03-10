@@ -17,8 +17,8 @@ project = sys.argv[2]
 # print("\nName of Python script:", sys.argv[0])
 
 # Load your API key from an environment variable or secret management service
-#openai.api_key = os.getenv("OPENAI_API_KEY")
-openai.api_key = "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"
+openai.api_key = os.getenv("OPENAI_API_KEY")
+#openai.api_key = "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"
 
 completion = openai.ChatCompletion.create(
   temperature=0.1,
