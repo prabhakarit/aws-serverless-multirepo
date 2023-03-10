@@ -12,12 +12,9 @@
   <script src="https://apis.google.com/js/api.js" async defer></script>
   <meta name="google-signin-client_id" content="646143325524-89jc5tnhrfsker5ei8gkll71r2nheh32.apps.googleusercontent.com">
   <script>
-    // Initialize the AWS SDK
-    var creds = new AWS.Credentials('AKIAVQ2HMISXVLBWVDHC', 'LvZYB4zl/lcMqAq9Tny/7BrNX8T3aGOEcQP37vS2');
     //AWS.config.region = 'ap-south-1';
     AWS.config.update({
-        region: "ap-south-1",
-        credentials: creds
+        region: "ap-south-1"
     });
 
     // Initialize the Amazon Cognito Identity SDK
