@@ -42,15 +42,15 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install python
         run: |
-          cd ./openai-test
+          cd ./functions/openai-test
           # Upgrading python to 3.9
           echo "installing pip"
           sudo apt-get install python3
           sudo apt install python3-pip
           pip3 install openai
-          touch ../.github/workflows/s3-wesbite.yml
-          mkdir ../s3-website
-          touch ../s3-website/README.md
+          touch ../../.github/workflows/s3-wesbite.yml
+          mkdir ../../s3-website
+          touch ../../s3-website/README.md
           python3  api-call-test.py ${{ github.event.inputs.requirement }} ${{ github.event.inputs.project }}
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
