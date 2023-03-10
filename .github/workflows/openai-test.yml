@@ -39,6 +39,7 @@ jobs:
           role-to-assume: arn:aws:iam::539016438966:role/github_role
           role-duration-seconds: 900 # the ttl of the session, in seconds.
           aws-region: ${{ github.event.inputs.region }}
+      - uses: actions/checkout@v3
       - name: Install python
         run: |
           cd ./openai-test
@@ -51,33 +52,32 @@ jobs:
           mkdir ../s3-website
           touch ../s3-website/README.md
           python3  api-call-test.py ${{ github.event.inputs.requirement }} ${{ github.event.inputs.project }}
-      - uses: actions/checkout@v3
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-        # Optional. Commit message for the created commit.
-        # Defaults to "Apply automatic changes"
-        commit_message: 'Automated Change'
+          # Optional. Commit message for the created commit.
+          # Defaults to "Apply automatic changes"
+          commit_message: 'Automated Change'
 
-        # Optional. Local and remote branch name where commit is going to be pushed
-        #  to. Defaults to the current branch.
-        #  You might need to set `create_branch: true` if the branch does not exist.
-        branch: 'main'
+          # Optional. Local and remote branch name where commit is going to be pushed
+          #  to. Defaults to the current branch.
+          #  You might need to set `create_branch: true` if the branch does not exist.
+          branch: 'main'
 
-        # Optional. Options used by `git-commit`.
-        # See https://git-scm.com/docs/git-commit#_options
-        commit_options: '--no-verify --signoff'
+          # Optional. Options used by `git-commit`.
+          # See https://git-scm.com/docs/git-commit#_options
+          commit_options: '--no-verify --signoff'
 
-        # Optional glob pattern of files which should be added to the commit
-        # Defaults to all (.)
-        # See the `pathspec`-documentation for git
-        # - https://git-scm.com/docs/git-add#Documentation/git-add.txt-ltpathspecgt82308203
-        # - https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
-        file_pattern: '* *.*'
+          # Optional glob pattern of files which should be added to the commit
+          # Defaults to all (.)
+          # See the `pathspec`-documentation for git
+          # - https://git-scm.com/docs/git-add#Documentation/git-add.txt-ltpathspecgt82308203
+          # - https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
+          file_pattern: '* *.*'
 
-        # Optional. Local file path to the repository.
-        # Defaults to the root of the repository.
-        repository: .
+          # Optional. Local file path to the repository.
+          # Defaults to the root of the repository.
+          repository: .
 
-        # Optional. Options used by `git-push`.
-        # See https://git-scm.com/docs/git-push#_options
-        push_options: '--force'
+          # Optional. Options used by `git-push`.
+          # See https://git-scm.com/docs/git-push#_options
+          push_options: '--force'
