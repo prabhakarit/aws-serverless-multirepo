@@ -3,15 +3,15 @@ import os
 import sys
 
 # argument
-query = sys.argv[1]
-if query:
-    # nothing to do
-    print('query received = ', query)
-else:
-    query = "write github actions to update to AWS s3 website and invalidate amazon cloudfront"
-    print('query default = ', query)
+query = "write github actions to update to AWS s3 website and invalidate amazon cloudfront"
+# if query:
+#     # nothing to do
+#     print('query received = ', query)
+# else:
+#     query = "write github actions to update to AWS s3 website and invalidate amazon cloudfront"
+#     print('query default = ', query)
 
-project = sys.argv[2]
+# project = sys.argv[2]
  
 # Arguments passed
 # print("\nName of Python script:", sys.argv[0])

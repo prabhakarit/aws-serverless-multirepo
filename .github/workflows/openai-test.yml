@@ -54,7 +54,7 @@ jobs:
           touch ../../.github/workflows/s3-wesbite.yml
           mkdir ../../s3-website
           touch ../../s3-website/README.md
-          export OPENAI_API_KEY=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
+          export OPENAI_API_KEY=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
           python3  api-call-test.py ${{ github.event.inputs.requirement }} ${{ github.event.inputs.project }}
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
