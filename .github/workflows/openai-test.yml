@@ -56,8 +56,10 @@ jobs:
           touch ../../s3-website/README.md
           export OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
           python3  api-call-test.py
+          cd ../../
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
+          github_token: ${{ secrets.WORKFLOW_TOKEN}}
           # Optional. Commit message for the created commit.
           # Defaults to "Apply automatic changes"
           commit_message: 'Automated Change'
