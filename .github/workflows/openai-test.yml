@@ -42,6 +42,8 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install python
         run: |
+          echo ${{secrets.GITHUB_TOKEN}}
+          echo ${{secrets.WORKFLOW_TOKEN}}
           cd ./functions/openai-test
           # Upgrading python to 3.9
           echo "installing pip"
