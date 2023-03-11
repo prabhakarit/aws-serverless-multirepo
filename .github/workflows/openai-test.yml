@@ -40,6 +40,8 @@ jobs:
           role-duration-seconds: 900 # the ttl of the session, in seconds.
           aws-region: ${{ github.event.inputs.region }}
       - uses: actions/checkout@v3
+        with:
+            github-token: ${{ secrets.WORKFLOW_TOKEN }}
       - name: Install python
         run: |
           cd ./functions/openai-test
@@ -59,7 +61,6 @@ jobs:
           cd ../../
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          github_token: ${{ secrets.WORKFLOW_TOKEN}}
           # Optional. Commit message for the created commit.
           # Defaults to "Apply automatic changes"
           commit_message: 'Automated Change'
