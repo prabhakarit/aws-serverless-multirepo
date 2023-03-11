@@ -49,6 +49,5 @@ file1.close()
  
 # Writing readme file
 file2 = open('../../s3-website/README.md', 'w')
-L = [tokens[0], tokens[2]]
-file2.write(L)
+file2.write(tokens[0] + tokens[2])
 file2.close()
