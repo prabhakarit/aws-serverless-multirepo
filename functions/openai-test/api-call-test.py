@@ -25,7 +25,7 @@ completion = openai.ChatCompletion.create(
   messages=[{"role": "user", "content": query}]
 )
 answer = completion.choices[0].message.content
-print(completion.choices[0].message.content)
+#print(completion.choices[0].message.content)
 tokens = answer.split('```')
 code_answer = tokens[1]
 print(code_answer)
