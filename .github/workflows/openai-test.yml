@@ -63,7 +63,7 @@ jobs:
           cd ../../
       - name: Set up Git user
         run: |
-          git config --global user.name "Prabhakar"
+          git config --global user.name "prabhakarit"
           git config --global user.email "prabhakar.borah@gmail.com"
       - name: Add and commit changes
         run: |
