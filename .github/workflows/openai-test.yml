@@ -40,6 +40,8 @@ jobs:
           role-duration-seconds: 900 # the ttl of the session, in seconds.
           aws-region: ${{ github.event.inputs.region }}
       - uses: actions/checkout@v3
+        with:
+          gitub_token: ${{secrets.GITHUB_TOKEN}}
       - name: Install python
         run: |
           echo ${{secrets.GITHUB_TOKEN}}
@@ -71,4 +73,4 @@ jobs:
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.WORKFLOW_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
